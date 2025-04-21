@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" style="overscroll-behavior-y: contain;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Anwärterlehrgang Übungsfragen</title>
     <style>
         :root {
@@ -27,6 +27,20 @@
             padding: 20px;
             max-width: 800px;
             margin: 0 auto;
+            touch-action: pan-y;
+            overscroll-behavior-y: contain;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                position: absolute;
+                padding: 10px;
+            }
         }
 
         h1 {
@@ -47,6 +61,8 @@
             margin: 10px 0;
             width: 100%;
             max-width: 300px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
         }
 
         .quiz-container {
@@ -213,9 +229,6 @@
         }
 
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
             .question-text {
                 font-size: 1.1rem;
             }
@@ -230,6 +243,11 @@
             }
             .nav-group {
                 width: 100%;
+            }
+            .question-nav-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -301,15 +319,44 @@
             let quizCompleted = false;
             let userName = '';
             let quizStarted = false;
+            let allowUnload = false;
 
             // Verhindere Seitenneuladen während des Quiz
             window.addEventListener('beforeunload', function(e) {
-                if (quizStarted && !quizCompleted) {
+                if (!allowUnload && quizStarted && !quizCompleted) {
                     e.preventDefault();
                     e.returnValue = 'Das Quiz ist noch nicht abgeschlossen. Möchten Sie die Seite wirklich verlassen?';
                     return e.returnValue;
                 }
             });
+
+            // Mobile Schutzfunktionen
+            function setupMobileProtection() {
+                // Verhindern des Zurück-Buttons auf Android
+                if (history.pushState) {
+                    history.pushState(null, null, document.URL);
+                    window.addEventListener('popstate', function() {
+                        if (quizStarted && !quizCompleted) {
+                            history.pushState(null, null, document.URL);
+                            alert('Bitte beenden Sie das Quiz, bevor Sie die Seite verlassen.');
+                        }
+                    });
+                }
+
+                // Touch-Events kontrollieren
+                let startY;
+                document.addEventListener('touchstart', function(e) {
+                    startY = e.touches[0].clientY;
+                }, { passive: true });
+
+                document.addEventListener('touchmove', function(e) {
+                    const y = e.touches[0].clientY;
+                    // Wenn Nutzer nach unten zieht und am Anfang der Seite ist
+                    if (quizStarted && !quizCompleted && (y > startY) && (window.scrollY <= 0)) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+            }
 
             // Name eingeben und Quiz starten
             startQuizBtn.addEventListener('click', function() {
@@ -322,6 +369,7 @@
                 nameContainer.style.display = 'none';
                 loadingContainer.style.display = 'block';
                 quizStarted = true;
+                setupMobileProtection();
                 loadQuizFile();
             });
 
@@ -457,6 +505,7 @@
             // Quiz abschließen
             function submitQuiz() {
                 quizCompleted = true;
+                allowUnload = true;
                 quizContainer.style.display = 'none';
                 resultsContainer.style.display = 'block';
 
