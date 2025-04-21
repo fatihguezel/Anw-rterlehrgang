@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" style="overscroll-behavior-y: contain;">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -20,45 +20,47 @@
             font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
+        html, body {
+            height: 100%;
+            overscroll-behavior-y: contain;
+        }
+
         body {
             background-color: white;
             color: var(--text-color);
             line-height: 1.6;
-            padding: 20px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             max-width: 800px;
             margin: 0 auto;
-            touch-action: pan-y;
-            overscroll-behavior-y: contain;
-            position: fixed;
             width: 100%;
-            height: 100%;
-            overflow-y: auto;
+            overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                position: absolute;
-                padding: 10px;
-            }
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: var(--primary-color);
+            font-size: clamp(1.5rem, 6vw, 2rem);
         }
 
         .name-container, .loading-container {
             text-align: center;
-            margin: 40px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .name-input {
-            padding: 10px;
+            padding: 12px;
             font-size: 1rem;
-            margin: 10px 0;
+            margin: 15px auto;
             width: 100%;
             max-width: 300px;
             border: 1px solid #dadce0;
@@ -67,43 +69,47 @@
 
         .quiz-container {
             display: none;
+            flex: 1;
+            width: 100%;
         }
 
         .progress-counter {
-            font-size: 1rem;
-            margin-bottom: 20px;
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
+            margin-bottom: 15px;
             color: #5f6368;
             text-align: center;
         }
 
         .question-container {
-            margin-bottom: 30px;
-            padding: 20px;
+            margin-bottom: 15px;
+            padding: 15px;
             background-color: white;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            scroll-margin: 20px;
         }
 
         .question-text {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            margin-bottom: 15px;
             font-weight: 500;
         }
 
         .options-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .option {
-            padding: 12px 16px;
+            padding: 12px 15px;
             border: 1px solid #dadce0;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
         }
 
         .option-label {
@@ -132,33 +138,34 @@
         }
 
         .navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-        }
-
-        .nav-group {
-            display: flex;
-            gap: 10px;
+            margin-top: 20px;
+            padding: 10px 0;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
             transition: background-color 0.2s;
-            flex: 1;
+            width: 100%;
         }
 
         #backToOverview {
             display: none;
             background-color: #f1f3f4;
             color: var(--text-color);
+            grid-column: span 2;
         }
 
         button:hover {
@@ -175,21 +182,15 @@
             cursor: not-allowed;
         }
 
-        .submit-btn {
-            display: block;
-            margin: 30px auto;
-            padding: 12px 24px;
-            background-color: var(--correct-color);
-        }
-
         .results-container {
             display: none;
             text-align: center;
             padding: 20px;
+            flex: 1;
         }
 
         .score {
-            font-size: 2rem;
+            font-size: clamp(1.8rem, 8vw, 2.5rem);
             margin: 20px 0;
             color: var(--primary-color);
         }
@@ -199,7 +200,7 @@
             flex-wrap: wrap;
             gap: 8px;
             justify-content: center;
-            margin: 30px 0;
+            margin: 25px 0;
         }
 
         .question-nav-btn {
@@ -211,6 +212,7 @@
             justify-content: center;
             background-color: var(--light-gray);
             cursor: pointer;
+            font-size: clamp(0.8rem, 3vw, 1rem);
         }
 
         .question-nav-btn.answered {
@@ -228,68 +230,89 @@
             color: white;
         }
 
-        @media (max-width: 600px) {
-            .question-text {
-                font-size: 1.1rem;
-            }
-            .option {
-                padding: 10px 14px;
-            }
-            button {
-                padding: 8px 16px;
-            }
+        /* Desktop-spezifische Styles */
+        @media (min-width: 601px) {
             .navigation {
-                flex-direction: column;
+                display: flex;
+                justify-content: space-between;
+                position: relative;
+                box-shadow: none;
+                background: transparent;
             }
-            .nav-group {
-                width: 100%;
+            
+            #backToOverview {
+                display: none;
+                width: auto;
             }
+            
+            .quiz-completed #backToOverview {
+                display: block;
+            }
+        }
+
+        /* Mobile-spezifische Optimierungen */
+        @media (max-width: 600px) {
+            .navigation {
+                padding: 10px;
+                margin-bottom: 5px;
+            }
+            
+            #nextBtn {
+                order: 1;
+            }
+            
+            #prevBtn {
+                order: 2;
+            }
+            
+            .quiz-completed #backToOverview {
+                display: block;
+                margin-top: 10px;
+            }
+            
             .question-nav-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 0.9rem;
+                width: 35px;
+                height: 35px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Quiz-App</h1>
+    <div id="app-container">
+        <h1>Quiz-App</h1>
 
-    <div class="name-container" id="nameContainer">
-        <h2>Bitte geben Sie Ihren Namen ein</h2>
-        <input type="text" id="userName" class="name-input" placeholder="Ihr Name" required>
-        <button id="startQuizBtn">Quiz starten</button>
-    </div>
-
-    <div class="loading-container" id="loadingContainer">
-        <p>Quiz wird geladen...</p>
-    </div>
-
-    <div class="quiz-container" id="quizContainer">
-        <div class="progress-counter" id="progressCounter">Frage 1 von 30</div>
-        
-        <div class="question-container">
-            <div class="question-text" id="questionText"></div>
-            <div class="options-container" id="optionsContainer"></div>
+        <div class="name-container" id="nameContainer">
+            <h2>Bitte geben Sie Ihren Namen ein</h2>
+            <input type="text" id="userName" class="name-input" placeholder="Ihr Name" required>
+            <button id="startQuizBtn">Quiz starten</button>
         </div>
 
-        <div class="navigation">
-            <div class="nav-group">
+        <div class="loading-container" id="loadingContainer">
+            <p>Quiz wird geladen...</p>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <div class="progress-counter" id="progressCounter">Frage 1 von 30</div>
+            
+            <div class="question-container">
+                <div class="question-text" id="questionText"></div>
+                <div class="options-container" id="optionsContainer"></div>
+            </div>
+
+            <div class="navigation">
+                <button id="nextBtn">Weiter</button>
                 <button id="prevBtn" disabled>Zurück</button>
                 <button id="backToOverview">Zurück zur Übersicht</button>
             </div>
-            <div class="nav-group">
-                <button id="nextBtn">Weiter</button>
-            </div>
         </div>
-    </div>
 
-    <div class="results-container" id="resultsContainer">
-        <h2>Ergebnis</h2>
-        <div class="score" id="scoreDisplay"></div>
-        <p>Klicke auf die Fragen unten, um deine Antworten zu überprüfen</p>
-        
-        <div class="question-nav" id="questionNav"></div>
+        <div class="results-container" id="resultsContainer">
+            <h2>Ergebnis</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <p>Klicke auf die Fragen unten, um deine Antworten zu überprüfen</p>
+            
+            <div class="question-nav" id="questionNav"></div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -310,6 +333,7 @@
             const questionNav = document.getElementById('questionNav');
             const userNameInput = document.getElementById('userName');
             const startQuizBtn = document.getElementById('startQuizBtn');
+            const appContainer = document.getElementById('appContainer');
 
             // Variablen
             let questions = [];
@@ -319,46 +343,32 @@
             let quizCompleted = false;
             let userName = '';
             let quizStarted = false;
-            let allowUnload = false;
 
-            // Verhindere Seitenneuladen während des Quiz
+            // Verhindere Seitenneuladen
             window.addEventListener('beforeunload', function(e) {
-                if (!allowUnload && quizStarted && !quizCompleted) {
+                if (quizStarted && !quizCompleted) {
                     e.preventDefault();
                     e.returnValue = 'Das Quiz ist noch nicht abgeschlossen. Möchten Sie die Seite wirklich verlassen?';
                     return e.returnValue;
                 }
             });
 
-            // Mobile Schutzfunktionen
-            function setupMobileProtection() {
-                // Verhindern des Zurück-Buttons auf Android
-                if (history.pushState) {
-                    history.pushState(null, null, document.URL);
-                    window.addEventListener('popstate', function() {
-                        if (quizStarted && !quizCompleted) {
-                            history.pushState(null, null, document.URL);
-                            alert('Bitte beenden Sie das Quiz, bevor Sie die Seite verlassen.');
-                        }
-                    });
+            // Mobile Touch-Events
+            let startY;
+            document.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+
+            document.addEventListener('touchmove', function(e) {
+                if (!quizStarted || quizCompleted) return;
+                
+                const y = e.touches[0].clientY;
+                if (y > startY && window.scrollY <= 0) {
+                    e.preventDefault();
                 }
+            }, { passive: false });
 
-                // Touch-Events kontrollieren
-                let startY;
-                document.addEventListener('touchstart', function(e) {
-                    startY = e.touches[0].clientY;
-                }, { passive: true });
-
-                document.addEventListener('touchmove', function(e) {
-                    const y = e.touches[0].clientY;
-                    // Wenn Nutzer nach unten zieht und am Anfang der Seite ist
-                    if (quizStarted && !quizCompleted && (y > startY) && (window.scrollY <= 0)) {
-                        e.preventDefault();
-                    }
-                }, { passive: false });
-            }
-
-            // Name eingeben und Quiz starten
+            // Quiz starten
             startQuizBtn.addEventListener('click', function() {
                 userName = userNameInput.value.trim();
                 if (userName === '') {
@@ -369,7 +379,6 @@
                 nameContainer.style.display = 'none';
                 loadingContainer.style.display = 'block';
                 quizStarted = true;
-                setupMobileProtection();
                 loadQuizFile();
             });
 
@@ -432,9 +441,6 @@
                 progressCounter.textContent = `Frage ${index + 1} von ${selectedQuestions.length}`;
                 questionText.textContent = question.text;
 
-                // "Zurück zur Übersicht"-Button nur nach Abschluss anzeigen
-                backToOverviewBtn.style.display = quizCompleted ? 'block' : 'none';
-
                 optionsContainer.innerHTML = '';
                 question.options.forEach((option, i) => {
                     const optionElement = document.createElement('div');
@@ -461,7 +467,6 @@
                     optionElement.appendChild(labelSpan);
                     optionElement.appendChild(textSpan);
                     
-                    // Nur während des Quiz Klick-Events hinzufügen
                     if (!quizCompleted) {
                         optionElement.addEventListener('click', () => selectOption(option.label));
                     }
@@ -482,12 +487,11 @@
                 nextBtn.disabled = false;
             }
 
-            // Zur vorherigen Frage
+            // Navigation
             prevBtn.addEventListener('click', () => {
                 if (currentQuestionIndex > 0) showQuestion(currentQuestionIndex - 1);
             });
 
-            // Zur nächsten Frage oder Quiz abschließen
             nextBtn.addEventListener('click', () => {
                 if (currentQuestionIndex < selectedQuestions.length - 1) {
                     showQuestion(currentQuestionIndex + 1);
@@ -496,7 +500,7 @@
                 }
             });
 
-            // Zurück zur Ergebnisübersicht
+            // Zurück zur Übersicht
             backToOverviewBtn.addEventListener('click', function() {
                 quizContainer.style.display = 'none';
                 resultsContainer.style.display = 'block';
@@ -505,7 +509,7 @@
             // Quiz abschließen
             function submitQuiz() {
                 quizCompleted = true;
-                allowUnload = true;
+                document.body.classList.add('quiz-completed');
                 quizContainer.style.display = 'none';
                 resultsContainer.style.display = 'block';
 
@@ -514,9 +518,6 @@
                 }, 0);
 
                 scoreDisplay.textContent = `${correctAnswers}/${selectedQuestions.length}`;
-
-                // Ergebnisse speichern (hier können Sie die Google Sheets Integration einfügen)
-                saveResults(userName, correctAnswers, selectedQuestions.length, userAnswers);
 
                 // Fragen-Navigation erstellen
                 questionNav.innerHTML = '';
@@ -540,12 +541,6 @@
                     });
                     questionNav.appendChild(navBtn);
                 });
-            }
-
-            // Ergebnisse speichern (Platzhalter für Google Sheets Integration)
-            function saveResults(name, score, total, answers) {
-                console.log('Ergebnisse:', { name, score, total, answers });
-                // Hier würde die Google Sheets Integration eingefügt werden
             }
         });
     </script>
