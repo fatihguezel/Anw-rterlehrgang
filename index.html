@@ -35,10 +35,18 @@
             color: var(--primary-color);
         }
 
-        .loading-container {
+        .name-container, .loading-container {
             text-align: center;
             margin: 40px 0;
             padding: 20px;
+        }
+
+        .name-input {
+            padding: 10px;
+            font-size: 1rem;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 300px;
         }
 
         .quiz-container {
@@ -229,6 +237,12 @@
 <body>
     <h1>Anwärterlehrgang Übungsfragen</h1>
 
+    <div class="name-container" id="nameContainer">
+        <h2>Bitte geben Sie Ihren Namen ein</h2>
+        <input type="text" id="userName" class="name-input" placeholder="Ihr Name" required>
+        <button id="startQuizBtn">Quiz starten</button>
+    </div>
+
     <div class="loading-container" id="loadingContainer">
         <p>Quiz wird geladen...</p>
     </div>
@@ -263,6 +277,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Elemente auswählen
+            const nameContainer = document.getElementById('nameContainer');
             const loadingContainer = document.getElementById('loadingContainer');
             const quizContainer = document.getElementById('quizContainer');
             const resultsContainer = document.getElementById('resultsContainer');
@@ -274,13 +290,42 @@
             const backToOverviewBtn = document.getElementById('backToOverview');
             const scoreDisplay = document.getElementById('scoreDisplay');
             const questionNav = document.getElementById('questionNav');
+            const userNameInput = document.getElementById('userName');
+            const startQuizBtn = document.getElementById('startQuizBtn');
 
+            // Variablen
             let questions = [];
             let currentQuestionIndex = 0;
             let selectedQuestions = [];
             let userAnswers = [];
             let quizCompleted = false;
+            let userName = '';
+            let quizStarted = false;
 
+            // Verhindere Seitenneuladen während des Quiz
+            window.addEventListener('beforeunload', function(e) {
+                if (quizStarted && !quizCompleted) {
+                    e.preventDefault();
+                    e.returnValue = 'Das Quiz ist noch nicht abgeschlossen. Möchten Sie die Seite wirklich verlassen?';
+                    return e.returnValue;
+                }
+            });
+
+            // Name eingeben und Quiz starten
+            startQuizBtn.addEventListener('click', function() {
+                userName = userNameInput.value.trim();
+                if (userName === '') {
+                    alert('Bitte geben Sie Ihren Namen ein');
+                    return;
+                }
+                
+                nameContainer.style.display = 'none';
+                loadingContainer.style.display = 'block';
+                quizStarted = true;
+                loadQuizFile();
+            });
+
+            // Quiz-Datei laden
             function loadQuizFile() {
                 const excelFileUrl = 'fragen.xlsx';
                 
@@ -302,6 +347,7 @@
                     });
             }
 
+            // Quiz-Daten verarbeiten
             function processQuizData(data) {
                 questions = data.map(item => {
                     const options = [];
@@ -323,11 +369,13 @@
                 showQuestion(currentQuestionIndex);
             }
 
+            // Zufällige Fragen auswählen
             function getRandomQuestions(allQuestions, count) {
                 const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
                 return shuffled.slice(0, count);
             }
 
+            // Frage anzeigen
             function showQuestion(index) {
                 if (index < 0 || index >= selectedQuestions.length) return;
                 currentQuestionIndex = index;
@@ -378,6 +426,7 @@
                 nextBtn.disabled = userAnswers[index] === null && !quizCompleted;
             }
 
+            // Antwort auswählen
             function selectOption(optionLabel) {
                 if (quizCompleted) return;
                 userAnswers[currentQuestionIndex] = optionLabel;
@@ -385,10 +434,12 @@
                 nextBtn.disabled = false;
             }
 
+            // Zur vorherigen Frage
             prevBtn.addEventListener('click', () => {
                 if (currentQuestionIndex > 0) showQuestion(currentQuestionIndex - 1);
             });
 
+            // Zur nächsten Frage oder Quiz abschließen
             nextBtn.addEventListener('click', () => {
                 if (currentQuestionIndex < selectedQuestions.length - 1) {
                     showQuestion(currentQuestionIndex + 1);
@@ -403,6 +454,7 @@
                 resultsContainer.style.display = 'block';
             });
 
+            // Quiz abschließen
             function submitQuiz() {
                 quizCompleted = true;
                 quizContainer.style.display = 'none';
@@ -414,6 +466,10 @@
 
                 scoreDisplay.textContent = `${correctAnswers}/${selectedQuestions.length}`;
 
+                // Ergebnisse speichern (hier können Sie die Google Sheets Integration einfügen)
+                saveResults(userName, correctAnswers, selectedQuestions.length, userAnswers);
+
+                // Fragen-Navigation erstellen
                 questionNav.innerHTML = '';
                 selectedQuestions.forEach((question, index) => {
                     const navBtn = document.createElement('div');
@@ -437,7 +493,11 @@
                 });
             }
 
-            loadQuizFile();
+            // Ergebnisse speichern (Platzhalter für Google Sheets Integration)
+            function saveResults(name, score, total, answers) {
+                console.log('Ergebnisse:', { name, score, total, answers });
+                // Hier würde die Google Sheets Integration eingefügt werden
+            }
         });
     </script>
 </body>
